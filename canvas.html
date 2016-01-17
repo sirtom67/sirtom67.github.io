@@ -45,6 +45,9 @@ var vertexPositionAttribute;
 var vertexColorAttribute;
 var perspectiveMatrix;
 
+var squareRotation = 0.0;
+var lastSquareUpdateTime = 0;
+
 //
 // start
 //
@@ -203,6 +206,9 @@ function drawScene() {
   loadIdentity();
   mvTranslate([-0.0, 0.0, -6.0]);
   
+  mvPushMatrix();
+  mvRotate(squareRotation, [1, 0, 1]);
+
   // Draw the square by binding the array buffer to the square's vertices
   // array, setting attributes, and pushing it to GL.
   gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesBuffer);
@@ -216,7 +222,20 @@ function drawScene() {
   setMatrixUniforms();
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
+  mvPopMatrix();
+
+  var currentTime = (new Date).getTime();
+  if (lastSquareUpdateTime) {
+    var delta = currentTime - lastSquareUpdateTime;
+
+    squareRotation += (30 * delta) / 1000.0;
+  }
+
+  lastSquareUpdateTime = currentTime;
+
 }
+
+
 
 function loadIdentity() {
   mvMatrix = Matrix.I(4);
@@ -237,6 +256,34 @@ function setMatrixUniforms() {
   var mvUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
   gl.uniformMatrix4fv(mvUniform, false, new Float32Array(mvMatrix.flatten()));
 }
+
+var mvMatrixStack = [];
+
+function mvPushMatrix(m) {
+  if (m) {
+    mvMatrixStack.push(m.dup());
+    mvMatrix = m.dup();
+  } else {
+    mvMatrixStack.push(mvMatrix.dup());
+  }
+}
+
+function mvPopMatrix() {
+  if (!mvMatrixStack.length) {
+    throw("Can't pop from an empty matrix stack.");
+  }
+  
+  mvMatrix = mvMatrixStack.pop();
+  return mvMatrix;
+}
+
+function mvRotate(angle, v) {
+  var inRadians = angle * Math.PI / 180.0;
+  
+  var m = Matrix.Rotation(inRadians, $V([v[0], v[1], v[2]])).ensure4x4();
+  multMatrix(m);
+}
+
 
 </script>
 
