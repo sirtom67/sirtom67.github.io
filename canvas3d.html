@@ -297,7 +297,7 @@ function drawScene() {
   mvTranslate([-0.0, 0.0, -6.0]);
   
   mvPushMatrix();
-  mvRotate(cubeRotation, [1, 0.15, 1]);
+  mvRotate(cubeRotation, [1, 2, 1]);
 
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesBuffer);
   gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
