@@ -8,12 +8,14 @@
 <script src="sylvester.js" type="text/javascript"></script>
 <script src="glUtils.js" type="text/javascript"></script>
 
+<!-- Fragment shader program -->
 <script id="shader-fs" type="x-shader/x-fragment">
   void main(void) {
     gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
   }
 </script>
 
+<!-- Vertex shader program -->
 <script id="shader-vs" type="x-shader/x-vertex">
   attribute vec3 aVertexPosition;
   attribute vec4 aVertexColor;
@@ -35,11 +37,12 @@ var gl; // A global variable for the WebGL context
 var canvas;
 
 var squareVerticesBuffer;
+var squareVerticesColorBuffer;
 var mvMatrix;
 var shaderProgram;
 var vertexPositionAttribute;
+var vertexColorAttribute;
 var perspectiveMatrix;
-
 
 //
 // start
@@ -176,6 +179,8 @@ function initBuffers() {
     1.0,  -1.0, 0.0,
     -1.0, -1.0, 0.0
   ];
+
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
   
   var colors = [
     1.0,  1.0,  1.0,  1.0,    // white
@@ -197,13 +202,19 @@ function drawScene() {
   loadIdentity();
   mvTranslate([-0.0, 0.0, -6.0]);
   
+  // Draw the square by binding the array buffer to the square's vertices
+  // array, setting attributes, and pushing it to GL.
   gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesBuffer);
   gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+
+  // Set the color attributes for the vertices
+  gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesColorBuffer);
+  gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
+
+  // Draw the square
   setMatrixUniforms();
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, squareVerticesColorBuffer);
-  gl.vertexAttribPointer(vertexColorAttribute, 4, gl.FLOAT, false, 0, 0);
 }
 
 function loadIdentity() {
