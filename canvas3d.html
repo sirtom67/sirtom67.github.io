@@ -248,7 +248,7 @@ function initBuffers() {
 
   var generatedColors = [];
 
-  for (j=0; j<6; j++) {
+  for (j=0; j<5; j++) {
     var c = colors[j];
 
     // Repeat each color four times for the four vertices of the face
@@ -257,6 +257,11 @@ function initBuffers() {
       generatedColors = generatedColors.concat(c);
     }
   }
+  // last face: 4 different colors
+  generatedColors = generatedColors.concat(colors[0]);
+  generatedColors = generatedColors.concat(colors[1]);
+  generatedColors = generatedColors.concat(colors[2]);
+  generatedColors = generatedColors.concat(colors[3]);
 
   cubeVerticesColorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, cubeVerticesColorBuffer);
